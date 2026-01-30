@@ -7,13 +7,17 @@ function mdEscape(s = "") {
   return String(s).replace(/\|/g, "\\|").trim();
 }
 
-function oneSentence15Words(text) {
-  const raw = String(text ?? "").replace(/\s+/g, " ").trim();
-  if (!raw) return "";
-  const first = raw.split(/(?<=[.!?])\s+/)[0] || raw;
-  const words = first.split(/\s+/).filter(Boolean);
-  const clipped = words.slice(0, 15).join(" ").replace(/[.!?]$/, "");
-  return clipped + (words.length > 15 ? "…" : "");
+function clipWords(text, n) {
+  const words = String(text ?? "").replace(/\s+/g, " ").trim().split(" ").filter(Boolean);
+  return words.slice(0, n).join(" ");
+}
+
+function enforceTenWordsFunny(line) {
+  const trimmed = String(line ?? "").replace(/\s+/g, " ").trim();
+  if (!trimmed) return "";
+  const firstSentence = trimmed.split(/(?<=[.!?])\s+/)[0] || trimmed;
+  const clipped = clipWords(firstSentence, 10);
+  return clipped.replace(/[.!?]$/, "") + (clipWords(firstSentence, 11) !== clipped ? "…" : "");
 }
 
 async function ghGraphql(query, variables = {}) {
@@ -44,19 +48,25 @@ async function ghGraphql(query, variables = {}) {
 }
 
 async function main() {
+  const taglines = JSON.parse(await fs.readFile("scripts/taglines.json", "utf8"));
+
   const data = await ghGraphql(
     `query($login:String!) {
       user(login:$login) {
-        pinnedItems(first: 25, types: REPOSITORY) {
+        repositories(
+          first: 30,
+          orderBy: {field: PUSHED_AT, direction: DESC},
+          ownerAffiliations: OWNER,
+          privacy: PUBLIC
+        ) {
           nodes {
-            ... on Repository {
-              name
-              description
-              url
-              pushedAt
-              isPrivate
-              isArchived
-            }
+            name
+            description
+            url
+            pushedAt
+            isPrivate
+            isArchived
+            isFork
           }
         }
       }
@@ -64,18 +74,25 @@ async function main() {
     { login: GH_USER }
   );
 
-  const reposRaw = data?.user?.pinnedItems?.nodes ?? [];
+  const reposRaw = data?.user?.repositories?.nodes ?? [];
   const repos = reposRaw
     .filter(Boolean)
     .filter((r) => !r.isPrivate)
     .filter((r) => !r.isArchived)
-    .map((r) => ({
-      name: mdEscape(r.name),
-      url: r.url,
-      desc: mdEscape(oneSentence15Words(r.description || "")),
-      pushedAt: r.pushedAt || "",
-    }))
-    .sort((a, b) => (b.pushedAt || "").localeCompare(a.pushedAt || ""));
+    .filter((r) => !r.isFork)
+    .filter((r) => r.name !== GH_USER) // hide the profile repo itself
+    .slice(0, 20)
+    .map((r) => {
+      const custom = taglines?.[r.name] || "";
+      const fallback = r.description ? `"${r.description}"` : "";
+      const desc = mdEscape(enforceTenWordsFunny(custom || fallback));
+      return {
+        name: mdEscape(r.name),
+        url: r.url,
+        pushedAt: r.pushedAt || "",
+        desc,
+      };
+    });
 
   const lines = [];
 
