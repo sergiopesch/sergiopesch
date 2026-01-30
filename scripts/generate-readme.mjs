@@ -94,26 +94,61 @@ async function main() {
     return words.slice(0, 15).join(" ").replace(/[.!?]$/, "") + (words.length > 15 ? "…" : "");
   }
 
+  function extractGitHubRepoUrl(html) {
+    // Find the first clean github repo URL.
+    // We prefer https://github.com/owner/repo (no extra path).
+    const matches = [...html.matchAll(/https?:\/\/github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)/g)].map(
+      (m) => `https://github.com/${m[1]}/${m[2]}`
+    );
+    if (!matches.length) return "";
+
+    // De-dupe while preserving order
+    const uniq = [];
+    const seen = new Set();
+    for (const u of matches) {
+      if (seen.has(u)) continue;
+      seen.add(u);
+      uniq.push(u);
+    }
+
+    // Prefer non-profile repos (i.e. second segment not equal to username)
+    const preferred = uniq.find((u) => !u.endsWith("/sergiopesch")) || uniq[0];
+    return preferred;
+  }
+
   // Build a full, de-duplicated project list
   const seen = new Set();
-  const cards = (Array.isArray(projects) ? projects : [])
+  const cardsBase = (Array.isArray(projects) ? projects : [])
     .map((p) => {
       const title = mdEscape(p?.title);
       const slug = mdEscape(p?.slug);
-      const url = `${SITE}/projects/${slug}`;
+      const pageUrl = `${SITE}/projects/${slug}`;
       const date = mdEscape(p?.date ?? "");
       const desc = mdEscape(oneSentence15Words(p?.excerpt ?? ""));
       // Prefer the external project URL for favicon purposes.
-      const siteUrl = p?.iframeSrc ? String(p.iframeSrc) : url;
+      const siteUrl = p?.iframeSrc ? String(p.iframeSrc) : pageUrl;
       const image = p?.image ? `${SITE}${p.image}` : "";
-      return { title, slug, url, date, desc, siteUrl, image };
+      return { title, slug, pageUrl, date, desc, siteUrl, image };
     })
-    .filter((p) => p.title && p.url && p.slug)
+    .filter((p) => p.title && p.pageUrl && p.slug)
     .filter((p) => {
       if (seen.has(p.slug)) return false;
       seen.add(p.slug);
       return true;
     });
+
+  // For each project, try to find its GitHub repo link by scraping the project page.
+  const cards = await Promise.all(
+    cardsBase.map(async (p) => {
+      try {
+        const html = await fetchHtml(p.pageUrl);
+        const repoUrl = extractGitHubRepoUrl(html);
+        return { ...p, repoUrl };
+      } catch {
+        return { ...p, repoUrl: "" };
+      }
+    })
+  );
 
   const thoughtCards = pick(thoughts, 5)
     .map((t) => {
@@ -208,9 +243,10 @@ async function main() {
         icon = saved ? saved : "";
       }
 
+      const link = c.repoUrl || c.pageUrl;
       const tail = c.desc ? ` — ${c.desc}` : "";
       const iconHtml = icon ? `<img src="${icon}" width="16" height="16" alt="" /> ` : "";
-      lines.push(`- ${iconHtml}<a href="${c.url}"><b>${c.title}</b></a>${tail}`);
+      lines.push(`- ${iconHtml}<a href="${link}"><b>${c.title}</b></a>${tail}`);
     }
 
     lines.push("");
