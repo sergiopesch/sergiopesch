@@ -5,7 +5,7 @@ Deep in vibe-coding mode
 
 ## Current Projects
 
-- <img src="https://www.google.com/s2/favicons?sz=64&domain_url=https%3A%2F%2Ffusecreatine.com%2F" width="16" height="16" alt="" /> <a href="https://www.sergiopesch.com/projects/14-project"><b>FUSE - Performance Coffee Creatine</b></a> — Creatine is one of the most studied supplements on earth
+- <img src="https://api.dicebear.com/9.x/identicon/svg?seed=14-project" width="16" height="16" alt="" /> <a href="https://www.sergiopesch.com/projects/14-project"><b>FUSE - Performance Coffee Creatine</b></a> — Creatine is one of the most studied supplements on earth
 - <img src="https://www.google.com/s2/favicons?sz=64&domain_url=https%3A%2F%2Fspotify-notetaker.vercel.app%2F" width="16" height="16" alt="" /> <a href="https://www.sergiopesch.com/projects/13-project"><b>Spotify Notetaker</b></a> — Take notes on tracks
 - <img src="https://www.sergiopesch.com/images/ravitto.gif" width="16" height="16" alt="" /> <a href="https://www.sergiopesch.com/projects/8-project"><b>Ravitto - The Dancing Robot</b></a> — A music-reactive robot that autonomously dances to musical beats while displaying expressive animations on LED…
 - <img src="https://www.sergiopesch.com/images/enddrivingtestcorruption.png" width="16" height="16" alt="" /> <a href="https://www.sergiopesch.com/projects/7-project"><b>End Driving Test Corruption in the UK</b></a> — After attending the Rebooting State Capacity Hackathon in London in April 2025, I met the…

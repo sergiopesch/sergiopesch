@@ -139,23 +139,41 @@ async function main() {
   // Projects (sorted newest → oldest)
   const cardsSorted = [...cards].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 
+  async function urlLooksLoadable(url) {
+    try {
+      const res = await fetch(url, {
+        method: "GET",
+        headers: { "user-agent": "github-profile-sync/1.0" },
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
+
   if (cardsSorted.length) {
     lines.push(`## Current Projects`);
     lines.push("");
 
     for (const c of cardsSorted) {
-      // Try, in order:
-      // 1) project-specific image from the site (often unique)
-      // 2) external site's favicon (if iframeSrc exists)
+      // Goal: avoid broken icons in GitHub rendering.
+      // 1) project image from sergiopesch.com (unique and reliable)
+      // 2) external favicon via Google S2, but only if it actually exists
       // 3) deterministic identicon seeded by slug (always unique)
-      const iconFromImage = c.image ? c.image : "";
-      const iconFromFavicon = `https://www.google.com/s2/favicons?sz=64&domain_url=${encodeURIComponent(
-        c.siteUrl
-      )}`;
       const identicon = `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(
         c.slug
       )}`;
-      const icon = iconFromImage || iconFromFavicon || identicon;
+
+      let icon = identicon;
+
+      if (c.image) {
+        icon = c.image;
+      } else {
+        const candidate = `https://www.google.com/s2/favicons?sz=64&domain_url=${encodeURIComponent(
+          c.siteUrl
+        )}`;
+        if (await urlLooksLoadable(candidate)) icon = candidate;
+      }
 
       const tail = c.desc ? ` — ${c.desc}` : "";
       lines.push(
