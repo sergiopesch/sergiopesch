@@ -81,19 +81,38 @@ async function main() {
 
   const ogDefault = `${SITE}/images/og-default.png`;
 
-  const cards = pick(projects, 6)
+  function oneSentence15Words(text) {
+    const raw = String(text ?? "").replace(/\s+/g, " ").trim();
+    if (!raw) return "";
+    // Take first sentence-ish chunk.
+    const first = raw.split(/(?<=[.!?])\s+/)[0] || raw;
+    const words = first
+      .replace(/[“”]/g, '"')
+      .replace(/[‘’]/g, "'")
+      .split(/\s+/)
+      .filter(Boolean);
+    return words.slice(0, 15).join(" ").replace(/[.!?]$/, "") + (words.length > 15 ? "…" : "");
+  }
+
+  // Build a full, de-duplicated project list
+  const seen = new Set();
+  const cards = (Array.isArray(projects) ? projects : [])
     .map((p) => {
       const title = mdEscape(p?.title);
       const slug = mdEscape(p?.slug);
       const url = `${SITE}/projects/${slug}`;
       const date = mdEscape(p?.date ?? "");
-      const excerpt = mdEscape(truncate(p?.excerpt ?? "", 120));
-      const img = p?.image ? `${SITE}${p.image}` : ogDefault;
+      const desc = mdEscape(oneSentence15Words(p?.excerpt ?? ""));
       // Prefer the external project URL for favicon purposes.
       const siteUrl = p?.iframeSrc ? String(p.iframeSrc) : url;
-      return { title, url, date, excerpt, img, siteUrl };
+      return { title, slug, url, date, desc, siteUrl };
     })
-    .filter((p) => p.title && p.url);
+    .filter((p) => p.title && p.url && p.slug)
+    .filter((p) => {
+      if (seen.has(p.slug)) return false;
+      seen.add(p.slug);
+      return true;
+    });
 
   const thoughtCards = pick(thoughts, 5)
     .map((t) => {
@@ -123,23 +142,19 @@ async function main() {
   if (cardsSorted.length) {
     lines.push(`## Projects`);
     lines.push("");
-    lines.push(`<div>`);
+
     for (const c of cardsSorted) {
-      // "Favicon as emoji" → render favicon as a tiny inline image next to the title.
-      // Prefer the project external site (if any) by using Google's favicon service on the project URL.
       const favicon = `https://www.google.com/s2/favicons?sz=64&domain_url=${encodeURIComponent(
         c.siteUrl
       )}`;
-
+      const tail = c.desc ? ` — ${c.desc}` : "";
       lines.push(
-        `<a href="${c.url}"><img src="${c.img}" alt="${c.title}" width="420" /></a>`
+        `- <img src="${favicon}" width="16" height="16" alt="" /> <a href="${c.url}"><b>${c.title}</b></a>${tail}`
       );
-      lines.push(
-        `<div><img src="${favicon}" alt="" width="16" height="16" /> <a href="${c.url}"><b>${c.title}</b></a>${c.date ? ` · <sub>${c.date}</sub>` : ""}<br/><sub>${c.excerpt}</sub></div>`
-      );
-      lines.push(`<br/>`);
     }
-    lines.push(`</div>`);
+
+    lines.push("");
+    lines.push(`<sub>${cardsSorted.length} projects</sub>`);
     lines.push("");
   }
 
