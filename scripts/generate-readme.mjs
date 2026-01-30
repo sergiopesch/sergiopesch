@@ -121,35 +121,32 @@ async function main() {
 
   // --- Vibe Activity (parody grid; not real GitHub contributions) ---
   function vibeActivitySvg() {
-    // Grid size similar-ish to GitHub contributions: 7 rows (days) x 24 cols (weeks)
+    // GitHub strips inline <svg> in profile READMEs, so we write it to assets/.
+    // Mask is your crab logo, downsampled into a 36x7 grid.
     const rows = 7;
-    const cols = 24;
+    const cols = 36;
     const cell = 12;
     const gap = 3;
     const w = cols * cell + (cols - 1) * gap;
     const h = rows * cell + (rows - 1) * gap;
 
-    // Red palette (light -> dark)
-    const palette = ["#2b0a0a", "#4a0f0f", "#7a1414", "#b91c1c", "#ef4444"]; // deep red → bright
+    // Red palette (background → bright)
+    const palette = ["#120404", "#2b0a0a", "#7a1414", "#b91c1c", "#ef4444"];
 
-    // Shape: a chunky "C" (my/our logo-ish vibe) drawn into the grid.
-    // 1 = ink, 0 = empty
     const shape = [
-      "011111111111111111111110",
-      "011000000000000000000010",
-      "011000000000000000000000",
-      "011000000000000000000000",
-      "011000000000000000000000",
-      "011000000000000000000010",
-      "011111111111111111111110",
+      "000000000000011000000001011110000000",
+      "000000000011111010011111111111000000",
+      "000000001111111111111111111111100000",
+      "000000001111111111111111111111000000",
+      "000000111111111111111111111100000000",
+      "000000111111111111111100000000000000",
+      "000000001111101111111000000000000000",
     ].map((row) => row.split("").map((c) => c === "1"));
 
-    // Sprinkle some "noise" inside the shape so it looks like activity, but keep the outline readable.
-    // Deterministic based on GH_USER.
+    // Deterministic noise for "activity"
     let seed = 0;
     for (const ch of GH_USER) seed = (seed * 31 + ch.charCodeAt(0)) >>> 0;
     function rand() {
-      // xorshift32
       seed ^= seed << 13;
       seed ^= seed >>> 17;
       seed ^= seed << 5;
@@ -163,18 +160,14 @@ async function main() {
         const x = c * (cell + gap);
         const y = r * (cell + gap);
 
-        // Background tiles: very dark red.
         let level = 0;
-
         if (on) {
-          // Inside the "C": brighter reds, weighted toward mid/high.
           const t = rand();
-          if (t < 0.15) level = 2;
-          else if (t < 0.55) level = 3;
+          if (t < 0.18) level = 2;
+          else if (t < 0.62) level = 3;
           else level = 4;
         } else {
-          // Outside: mostly empty, occasional faint dot.
-          level = rand() < 0.03 ? 1 : 0;
+          level = rand() < 0.02 ? 1 : 0;
         }
 
         rects.push(
@@ -183,14 +176,17 @@ async function main() {
       }
     }
 
-    return `\n<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vibe Activity (parody)">\n  <rect width="100%" height="100%" fill="transparent"/>\n  ${rects.join("\n  ")}\n</svg>\n`;
+    return `<?xml version="1.0" encoding="UTF-8"?>\n<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vibe Activity (parody)">\n  <rect width="100%" height="100%" fill="transparent"/>\n  ${rects.join("\n  ")}\n</svg>\n`;
   }
+
+  await fs.mkdir("assets", { recursive: true });
+  await fs.writeFile("assets/vibe-activity.svg", vibeActivitySvg(), "utf8");
 
   lines.push(`## Vibe Activity`);
   lines.push("");
-  lines.push(`<sub>Parody grid. Not real contributions. Just vibes.</sub>`);
+  lines.push(`<sub>Parody heatmap. Not real contributions. Crab-coded.</sub>`);
   lines.push("");
-  lines.push(vibeActivitySvg());
+  lines.push(`<img src="assets/vibe-activity.svg" alt="Vibe Activity" />`);
   lines.push("");
 
   await fs.writeFile("README.md", lines.join("\n"), "utf8");
