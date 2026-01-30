@@ -289,3 +289,4 @@ Deep in vibe-coding mode
   <rect x="525" y="90" width="12" height="12" rx="2" fill="#2b0a0a" />
 </svg>
 
+<img src="assets/vibe-activity.svg" alt="Vibe Activity" />

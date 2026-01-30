@@ -130,8 +130,8 @@ async function main() {
     const w = cols * cell + (cols - 1) * gap;
     const h = rows * cell + (rows - 1) * gap;
 
-    // Red palette (light -> dark)
-    const palette = ["#2b0a0a", "#4a0f0f", "#7a1414", "#b91c1c", "#ef4444"]; // deep red → bright
+    // Red palette (background → bright)
+    const palette = ["#120404", "#2b0a0a", "#7a1414", "#b91c1c", "#ef4444"];
 
     // Shape: your crab logo, downsampled into a 36x7 mask.
     // 1 = ink, 0 = empty
@@ -145,12 +145,10 @@ async function main() {
       "000000001111101111111000000000000000",
     ].map((row) => row.split("").map((c) => c === "1"));
 
-    // Sprinkle some "noise" inside the shape so it looks like activity, but keep the outline readable.
-    // Deterministic based on GH_USER.
+    // Deterministic noise for "activity"
     let seed = 0;
     for (const ch of GH_USER) seed = (seed * 31 + ch.charCodeAt(0)) >>> 0;
     function rand() {
-      // xorshift32
       seed ^= seed << 13;
       seed ^= seed >>> 17;
       seed ^= seed << 5;
@@ -164,18 +162,14 @@ async function main() {
         const x = c * (cell + gap);
         const y = r * (cell + gap);
 
-        // Background tiles: very dark red.
         let level = 0;
-
         if (on) {
-          // Inside the "C": brighter reds, weighted toward mid/high.
           const t = rand();
-          if (t < 0.15) level = 2;
-          else if (t < 0.55) level = 3;
+          if (t < 0.18) level = 2;
+          else if (t < 0.62) level = 3;
           else level = 4;
         } else {
-          // Outside: mostly empty, occasional faint dot.
-          level = rand() < 0.03 ? 1 : 0;
+          level = rand() < 0.02 ? 1 : 0;
         }
 
         rects.push(
@@ -184,14 +178,17 @@ async function main() {
       }
     }
 
-    return `\n<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vibe Activity (parody)">\n  <rect width="100%" height="100%" fill="transparent"/>\n  ${rects.join("\n  ")}\n</svg>\n`;
+    return `<?xml version="1.0" encoding="UTF-8"?>\n<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vibe Activity (parody)">\n  <rect width="100%" height="100%" fill="transparent"/>\n  ${rects.join("\n  ")}\n</svg>\n`;
   }
+
+  await fs.mkdir("assets", { recursive: true });
+  await fs.writeFile("assets/vibe-activity.svg", vibeActivitySvg(), "utf8");
 
   lines.push(`## Vibe Activity`);
   lines.push("");
   lines.push(`<sub>Parody heatmap. Not real contributions. Crab-coded.</sub>`);
   lines.push("");
-  lines.push(vibeActivitySvg());
+  lines.push(`<img src="assets/vibe-activity.svg" alt="Vibe Activity" />`);
   lines.push("");
 
   await fs.writeFile("README.md", lines.join("\n"), "utf8");
