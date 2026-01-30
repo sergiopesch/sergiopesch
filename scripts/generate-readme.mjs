@@ -121,8 +121,8 @@ async function main() {
 
   // --- Vibe Activity (parody grid; not real GitHub contributions) ---
   function vibeActivitySvg() {
-    // GitHub strips inline <svg> in profile READMEs, so we write it to assets/.
-    // Mask is your crab logo, downsampled into a 36x7 grid.
+    // Grid size similar-ish to GitHub contributions: 7 rows (days) x N cols (weeks)
+    // This mask was derived from your logocrab.webp (downsampled).
     const rows = 7;
     const cols = 36;
     const cell = 12;
@@ -133,6 +133,8 @@ async function main() {
     // Red palette (background → bright)
     const palette = ["#120404", "#2b0a0a", "#7a1414", "#b91c1c", "#ef4444"];
 
+    // Shape: your crab logo, downsampled into a 36x7 mask.
+    // 1 = ink, 0 = empty
     const shape = [
       "000000000000011000000001011110000000",
       "000000000011111010011111111111000000",
