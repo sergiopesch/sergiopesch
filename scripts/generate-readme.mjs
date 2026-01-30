@@ -1,258 +1,107 @@
 import fs from "node:fs/promises";
 
-const SITE = "https://www.sergiopesch.com";
+const GH_USER = "sergiopesch";
+const GH_GRAPHQL = "https://api.github.com/graphql";
 
 function mdEscape(s = "") {
   return String(s).replace(/\|/g, "\\|").trim();
 }
 
-function truncate(s, n) {
-  const str = String(s ?? "").trim();
-  if (!str) return "";
-  if (str.length <= n) return str;
-  return str.slice(0, n - 1).trimEnd() + "…";
+function oneSentence15Words(text) {
+  const raw = String(text ?? "").replace(/\s+/g, " ").trim();
+  if (!raw) return "";
+  const first = raw.split(/(?<=[.!?])\s+/)[0] || raw;
+  const words = first.split(/\s+/).filter(Boolean);
+  const clipped = words.slice(0, 15).join(" ").replace(/[.!?]$/, "");
+  return clipped + (words.length > 15 ? "…" : "");
 }
 
-async function fetchHtml(url) {
-  const res = await fetch(url, {
-    headers: {
-      "user-agent": "github-profile-sync/1.0 (+https://github.com/sergiopesch)",
-      accept: "text/html",
-    },
-  });
-  if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status} ${res.statusText}`);
-  return await res.text();
-}
-
-function extractNextData(html, urlForError) {
-  const m = html.match(
-    /<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/s
-  );
-  if (!m) throw new Error(`Could not find __NEXT_DATA__ on ${urlForError}`);
-  try {
-    return JSON.parse(m[1]);
-  } catch (e) {
-    throw new Error(`Failed to parse __NEXT_DATA__ JSON on ${urlForError}: ${e?.message ?? e}`);
+async function ghGraphql(query, variables = {}) {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) {
+    throw new Error(
+      "Missing GITHUB_TOKEN. In GitHub Actions this is available automatically as secrets.GITHUB_TOKEN."
+    );
   }
-}
 
-function pick(arr, n) {
-  return Array.isArray(arr) ? arr.slice(0, n) : [];
+  const res = await fetch(GH_GRAPHQL, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "user-agent": "github-profile-readme-generator",
+      authorization: `bearer ${token}`,
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || json.errors) {
+    const msg = JSON.stringify(json.errors || json, null, 2);
+    throw new Error(`GitHub GraphQL failed: ${res.status} ${res.statusText}\n${msg}`);
+  }
+
+  return json.data;
 }
 
 async function main() {
-  // Pull structured data from your site (Next.js SSG embeds JSON into the HTML)
-  const [homeHtml, projectsHtml, thoughtsHtml] = await Promise.all([
-    fetchHtml(`${SITE}/`),
-    fetchHtml(`${SITE}/projects`),
-    fetchHtml(`${SITE}/raw-thoughts`),
-  ]);
-
-  const home = extractNextData(homeHtml, `${SITE}/`);
-  const projectsPage = extractNextData(projectsHtml, `${SITE}/projects`);
-  const thoughtsPage = extractNextData(thoughtsHtml, `${SITE}/raw-thoughts`);
-
-  const latestProject = home?.props?.pageProps?.latestProject;
-  const projects = projectsPage?.props?.pageProps?.projects ?? [];
-  const thoughts = thoughtsPage?.props?.pageProps?.posts ?? [];
-
-  const topProjects = pick(projects, 6)
-    .map((p) => ({
-      title: mdEscape(p?.title),
-      url: `${SITE}/projects/${mdEscape(p?.slug)}`,
-      desc: mdEscape(truncate(p?.excerpt ?? "", 110)),
-      date: mdEscape(p?.date ?? ""),
-    }))
-    .filter((p) => p.title && p.url);
-
-  const topThoughts = pick(thoughts, 5)
-    .map((t) => ({
-      title: mdEscape(t?.title),
-      url: `${SITE}/raw-thoughts/${mdEscape(t?.slug)}`,
-      date: mdEscape(t?.date ?? ""),
-    }))
-    .filter((t) => t.title && t.url);
-
-  const latestProjectLine = latestProject?.slug
-    ? `**Latest:** [${mdEscape(latestProject.title)}](${SITE}/projects/${mdEscape(
-        latestProject.slug
-      )}) — ${mdEscape(truncate(latestProject.excerpt ?? "", 140))}`
-    : "";
-
-  const ogDefault = `${SITE}/images/og-default.png`;
-
-  function oneSentence15Words(text) {
-    const raw = String(text ?? "").replace(/\s+/g, " ").trim();
-    if (!raw) return "";
-    // Take first sentence-ish chunk.
-    const first = raw.split(/(?<=[.!?])\s+/)[0] || raw;
-    const words = first
-      .replace(/[“”]/g, '"')
-      .replace(/[‘’]/g, "'")
-      .split(/\s+/)
-      .filter(Boolean);
-    return words.slice(0, 15).join(" ").replace(/[.!?]$/, "") + (words.length > 15 ? "…" : "");
-  }
-
-  function extractGitHubRepoUrl(html) {
-    // Find the first clean github repo URL.
-    // We prefer https://github.com/owner/repo (no extra path).
-    const matches = [...html.matchAll(/https?:\/\/github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)/g)].map(
-      (m) => `https://github.com/${m[1]}/${m[2]}`
-    );
-    if (!matches.length) return "";
-
-    // De-dupe while preserving order
-    const uniq = [];
-    const seen = new Set();
-    for (const u of matches) {
-      if (seen.has(u)) continue;
-      seen.add(u);
-      uniq.push(u);
-    }
-
-    // Prefer non-profile repos (i.e. second segment not equal to username)
-    const preferred = uniq.find((u) => !u.endsWith("/sergiopesch")) || uniq[0];
-    return preferred;
-  }
-
-  // Build a full, de-duplicated project list
-  const seen = new Set();
-  const cardsBase = (Array.isArray(projects) ? projects : [])
-    .map((p) => {
-      const title = mdEscape(p?.title);
-      const slug = mdEscape(p?.slug);
-      const pageUrl = `${SITE}/projects/${slug}`;
-      const date = mdEscape(p?.date ?? "");
-      const desc = mdEscape(oneSentence15Words(p?.excerpt ?? ""));
-      // Prefer the external project URL for favicon purposes.
-      const siteUrl = p?.iframeSrc ? String(p.iframeSrc) : pageUrl;
-      const image = p?.image ? `${SITE}${p.image}` : "";
-      return { title, slug, pageUrl, date, desc, siteUrl, image };
-    })
-    .filter((p) => p.title && p.pageUrl && p.slug)
-    .filter((p) => {
-      if (seen.has(p.slug)) return false;
-      seen.add(p.slug);
-      return true;
-    });
-
-  // For each project, try to find its GitHub repo link by scraping the project page.
-  const cards = await Promise.all(
-    cardsBase.map(async (p) => {
-      try {
-        const html = await fetchHtml(p.pageUrl);
-        const repoUrl = extractGitHubRepoUrl(html);
-        return { ...p, repoUrl };
-      } catch {
-        return { ...p, repoUrl: "" };
+  const data = await ghGraphql(
+    `query($login:String!) {
+      user(login:$login) {
+        pinnedItems(first: 25, types: REPOSITORY) {
+          nodes {
+            ... on Repository {
+              name
+              description
+              url
+              pushedAt
+              isPrivate
+              isArchived
+            }
+          }
+        }
       }
-    })
+    }`,
+    { login: GH_USER }
   );
 
-  const thoughtCards = pick(thoughts, 5)
-    .map((t) => {
-      const title = mdEscape(t?.title);
-      const slug = mdEscape(t?.slug);
-      const url = `${SITE}/raw-thoughts/${slug}`;
-      const date = mdEscape(t?.date ?? "");
-      const excerpt = mdEscape(truncate(t?.excerpt ?? "", 140));
-      return { title, url, date, excerpt };
-    })
-    .filter((t) => t.title && t.url);
+  const reposRaw = data?.user?.pinnedItems?.nodes ?? [];
+  const repos = reposRaw
+    .filter(Boolean)
+    .filter((r) => !r.isPrivate)
+    .filter((r) => !r.isArchived)
+    .map((r) => ({
+      name: mdEscape(r.name),
+      url: r.url,
+      desc: mdEscape(oneSentence15Words(r.description || "")),
+      pushedAt: r.pushedAt || "",
+    }))
+    .sort((a, b) => (b.pushedAt || "").localeCompare(a.pushedAt || ""));
 
   const lines = [];
 
-  // Header
-  lines.push(`# Hello there, I'm Sergio <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28" alt="hi" />`);
+  lines.push(
+    `# Hello there, I'm Sergio <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28" alt="hi" />`
+  );
   lines.push(`📍 London`);
   lines.push("");
   lines.push(`Deep in vibe-coding mode`);
   lines.push("");
 
-  // Projects as “cards” (HTML for layout)
-  // Projects (sorted newest → oldest)
-  const cardsSorted = [...cards].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  lines.push(`## Current Projects`);
+  lines.push("");
 
-  async function fetchAsFile(url, outPathBase) {
-    // Downloads an image and saves it to disk.
-    const res = await fetch(url, {
-      headers: {
-        "user-agent": "github-profile-sync/1.0 (+https://github.com/sergiopesch)",
-        accept: "image/*",
-      },
-    });
-    if (!res.ok) return null;
+  const ghFavicon = `https://github.com/favicon.ico`;
 
-    const buf = Buffer.from(await res.arrayBuffer());
-    if (!buf.length) return null;
-
-    const ct = (res.headers.get("content-type") || "").toLowerCase();
-    let ext = "png";
-    if (ct.includes("image/svg")) ext = "svg";
-    else if (ct.includes("image/x-icon") || ct.includes("image/vnd.microsoft.icon")) ext = "ico";
-    else if (ct.includes("image/jpeg")) ext = "jpg";
-    else if (ct.includes("image/gif")) ext = "gif";
-    else if (ct.includes("image/png")) ext = "png";
-
-    const outPath = `${outPathBase}.${ext}`;
-    await fs.mkdir("assets/icons", { recursive: true });
-    await fs.writeFile(outPath, buf);
-    return outPath;
+  for (const r of repos) {
+    const tail = r.desc ? ` — ${r.desc}` : "";
+    lines.push(
+      `- <img src="${ghFavicon}" width="16" height="16" alt="" /> <a href="${r.url}"><b>${r.name}</b></a>${tail}`
+    );
   }
 
-  async function ensureIconFileForProject({ slug, siteUrl }) {
-    // Prefer fetching directly from the project origin to avoid broken/blocked third-party favicon services.
-    try {
-      const u = new URL(siteUrl);
-      const origin = u.origin;
-
-      const candidates = [
-        `${origin}/favicon.ico`,
-        `${origin}/favicon.png`,
-        `${origin}/favicon.svg`,
-        `${origin}/apple-touch-icon.png`,
-      ];
-
-      for (const cand of candidates) {
-        const saved = await fetchAsFile(cand, `assets/icons/${slug}`);
-        if (saved) return saved;
-      }
-
-      // Last resort: identicon (always available)
-      const ident = `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(slug)}`;
-      const saved = await fetchAsFile(ident, `assets/icons/${slug}`);
-      return saved;
-    } catch {
-      const ident = `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(slug)}`;
-      return await fetchAsFile(ident, `assets/icons/${slug}`);
-    }
-  }
-
-  if (cardsSorted.length) {
-    lines.push(`## Current Projects`);
-    lines.push("");
-
-    for (const c of cardsSorted) {
-      // Prefer project images from your own site (most reliable, already hosted).
-      // Otherwise, download and store each project's favicon locally in-repo (so GitHub never hotlinks it).
-      let icon = c.image || "";
-
-      if (!icon) {
-        const saved = await ensureIconFileForProject({ slug: c.slug, siteUrl: c.siteUrl });
-        icon = saved ? saved : "";
-      }
-
-      const link = c.repoUrl || c.pageUrl;
-      const tail = c.desc ? ` — ${c.desc}` : "";
-      const iconHtml = icon ? `<img src="${icon}" width="16" height="16" alt="" /> ` : "";
-      lines.push(`- ${iconHtml}<a href="${link}"><b>${c.title}</b></a>${tail}`);
-    }
-
-    lines.push("");
-    lines.push(`<sub>${cardsSorted.length} projects</sub>`);
-    lines.push("");
-  }
+  lines.push("");
+  lines.push(`<sub>${repos.length} repos</sub>`);
+  lines.push("");
 
   await fs.writeFile("README.md", lines.join("\n"), "utf8");
   console.log("README.md generated");
