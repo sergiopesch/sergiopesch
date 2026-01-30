@@ -105,7 +105,8 @@ async function main() {
       const desc = mdEscape(oneSentence15Words(p?.excerpt ?? ""));
       // Prefer the external project URL for favicon purposes.
       const siteUrl = p?.iframeSrc ? String(p.iframeSrc) : url;
-      return { title, slug, url, date, desc, siteUrl };
+      const image = p?.image ? `${SITE}${p.image}` : "";
+      return { title, slug, url, date, desc, siteUrl, image };
     })
     .filter((p) => p.title && p.url && p.slug)
     .filter((p) => {
@@ -127,12 +128,11 @@ async function main() {
 
   const lines = [];
 
-  // Minimal header
-  lines.push(`<div align="center">`);
+  // Header
+  lines.push(`# Hello there, I'm Sergio 👋`);
+  lines.push(`📍 London`);
   lines.push("");
-  lines.push(`# Sergio Peschiera`);
-  lines.push("");
-  lines.push(`</div>`);
+  lines.push(`Deep in vibe-coding mode`);
   lines.push("");
 
   // Projects as “cards” (HTML for layout)
@@ -140,16 +140,26 @@ async function main() {
   const cardsSorted = [...cards].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 
   if (cardsSorted.length) {
-    lines.push(`## Projects`);
+    lines.push(`## Current Projects`);
     lines.push("");
 
     for (const c of cardsSorted) {
-      const favicon = `https://www.google.com/s2/favicons?sz=64&domain_url=${encodeURIComponent(
+      // Try, in order:
+      // 1) project-specific image from the site (often unique)
+      // 2) external site's favicon (if iframeSrc exists)
+      // 3) deterministic identicon seeded by slug (always unique)
+      const iconFromImage = c.image ? c.image : "";
+      const iconFromFavicon = `https://www.google.com/s2/favicons?sz=64&domain_url=${encodeURIComponent(
         c.siteUrl
       )}`;
+      const identicon = `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(
+        c.slug
+      )}`;
+      const icon = iconFromImage || iconFromFavicon || identicon;
+
       const tail = c.desc ? ` — ${c.desc}` : "";
       lines.push(
-        `- <img src="${favicon}" width="16" height="16" alt="" /> <a href="${c.url}"><b>${c.title}</b></a>${tail}`
+        `- <img src="${icon}" width="16" height="16" alt="" /> <a href="${c.url}"><b>${c.title}</b></a>${tail}`
       );
     }
 
