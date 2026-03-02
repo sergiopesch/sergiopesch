@@ -43,4 +43,8 @@ Deep in vibe-coding mode
 
 <sub>35 repos</sub>
 
+## Vibe Activity
 
+<sub>Parody heatmap. Not real contributions. Crab-coded.</sub>
+
+<img src="assets/vibe-activity.svg" alt="Vibe Activity" />
