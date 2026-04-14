@@ -117,9 +117,9 @@ async function main() {
   lines.push(
     `# Hello there, I'm Sergio <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28" alt="hi" />`
   );
-  lines.push(`📍 London`);
+  lines.push(`📍 London, UK`);
   lines.push("");
-  lines.push(`Deep in vibe-coding mode`);
+  lines.push(`Learning as I go`);
   lines.push("");
 
   lines.push(`## Current Projects`);

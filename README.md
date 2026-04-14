@@ -1,7 +1,7 @@
 # Hello there, I'm Sergio <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28" alt="hi" />
-📍 London
+📍 London, UK
 
-Deep in vibe-coding mode
+Learning as I go
 
 ## Current Projects
 
