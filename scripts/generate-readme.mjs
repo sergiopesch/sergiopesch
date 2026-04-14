@@ -50,6 +50,9 @@ async function ghGraphql(query, variables = {}) {
 async function main() {
   const taglines = JSON.parse(await fs.readFile("scripts/taglines.json", "utf8"));
   const emojis = JSON.parse(await fs.readFile("scripts/emojis.json", "utf8"));
+  const projectSections = JSON.parse(
+    await fs.readFile("scripts/project-sections.json", "utf8")
+  );
 
   // Paginate through ALL public repos, sorted by creation date (newest first)
   let allNodes = [];
@@ -104,6 +107,7 @@ async function main() {
       const desc = mdEscape(enforceTenWordsFunny(custom || fallback));
       const emoji = emojis?.[r.name] || "✨";
       return {
+        key: String(r.name).toLowerCase(),
         name: mdEscape(String(r.name).toLowerCase()),
         url: r.url,
         createdAt: r.createdAt || "",
@@ -111,6 +115,50 @@ async function main() {
         emoji,
       };
     });
+
+  const repoMap = new Map(repos.map((repo) => [repo.key, repo]));
+  const assignedRepoKeys = new Set();
+
+  function pickRepos(repoNames = []) {
+    const picked = [];
+
+    for (const repoName of repoNames) {
+      const key = String(repoName).toLowerCase();
+      const repo = repoMap.get(key);
+      if (!repo || assignedRepoKeys.has(key)) continue;
+      assignedRepoKeys.add(key);
+      picked.push(repo);
+    }
+
+    return picked;
+  }
+
+  function renderSection(lines, title, description, sectionRepos) {
+    lines.push(`## ${title}`);
+    lines.push("");
+    lines.push(`<sub>${description}</sub>`);
+    lines.push("");
+
+    if (!sectionRepos.length) {
+      lines.push(`- _No repos assigned yet._`);
+      lines.push("");
+      return;
+    }
+
+    for (const r of sectionRepos) {
+      const tail = r.desc ? ` — ${r.desc}` : "";
+      lines.push(`- ${r.emoji} <a href="${r.url}"><b>${r.name}</b></a>${tail}`);
+    }
+
+    lines.push("");
+  }
+
+  const activeProjects = pickRepos(projectSections.activeProjects ?? []);
+  const vibeCodedProjects = pickRepos(projectSections.vibeCodedProjects ?? []);
+  const archiveProjects = pickRepos(projectSections.archiveProjects ?? []);
+
+  const unassignedRepos = repos.filter((repo) => !assignedRepoKeys.has(repo.key));
+  activeProjects.push(...unassignedRepos);
 
   const lines = [];
 
@@ -122,15 +170,10 @@ async function main() {
   lines.push(`Learning as I go`);
   lines.push("");
 
-  lines.push(`## Current Projects`);
-  lines.push("");
+  renderSection(lines, `Active Projects`, `Focus learning`, activeProjects);
+  renderSection(lines, `Vibe Coded Projects`, `Just for fun`, vibeCodedProjects);
+  renderSection(lines, `Archive Projects`, `Saved for later`, archiveProjects);
 
-  for (const r of repos) {
-    const tail = r.desc ? ` — ${r.desc}` : "";
-    lines.push(`- ${r.emoji} <a href="${r.url}"><b>${r.name}</b></a>${tail}`);
-  }
-
-  lines.push("");
   lines.push(`<sub>${repos.length} repos</sub>`);
   lines.push("");
 

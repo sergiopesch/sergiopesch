@@ -3,7 +3,9 @@
 
 Learning as I go
 
-## Current Projects
+## Active Projects
+
+<sub>Focus learning</sub>
 
 - ✨ <a href="https://github.com/sergiopesch/animal360"><b>animal360</b></a> — "A Salesforce application for animal welfare organisations"
 - ✨ <a href="https://github.com/sergiopesch/voltz"><b>voltz</b></a> — "Voice-first AI companion for electronics enthusiasts"
@@ -36,6 +38,18 @@ Learning as I go
 - 📝 <a href="https://github.com/sergiopesch/Note-Taker"><b>note-taker</b></a> — Talk, ramble, get notes
 - 🌐 <a href="https://github.com/sergiopesch/my-site-template"><b>my-site-template</b></a> — Site template
 - 🌱 <a href="https://github.com/sergiopesch/plant-watering-system"><b>plant-watering-system</b></a> — Waters plants
+
+## Vibe Coded Projects
+
+<sub>Just for fun</sub>
+
+- _No repos assigned yet._
+
+## Archive Projects
+
+<sub>Saved for later</sub>
+
+- _No repos assigned yet._
 
 <sub>31 repos</sub>
 
