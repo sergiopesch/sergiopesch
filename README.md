@@ -5,10 +5,10 @@
 
 <sub>Focus learning</sub>
 
-- ✨ <a href="https://github.com/sergiopesch/animal360"><b>animal360</b></a> — "A Salesforce application for animal welfare organisations"
-- ✨ <a href="https://github.com/sergiopesch/voltz"><b>voltz</b></a> — "Voice-first AI companion for electronics enthusiasts"
-- ✨ <a href="https://github.com/sergiopesch/clitronic"><b>clitronic</b></a> — "A tool for electronic enthusiasts "
-- ✨ <a href="https://github.com/sergiopesch/voco"><b>voco</b></a> — "A voice-native interface layer designed for speed and precision"
+- 🐾 <a href="https://github.com/sergiopesch/animal360"><b>animal360</b></a> — "A Salesforce application for animal welfare organisations"
+- ⚡ <a href="https://github.com/sergiopesch/voltz"><b>voltz</b></a> — "Voice-first AI companion for electronics enthusiasts"
+- 🔧 <a href="https://github.com/sergiopesch/clitronic"><b>clitronic</b></a> — "A tool for electronic enthusiasts "
+- 🗣️ <a href="https://github.com/sergiopesch/voco"><b>voco</b></a> — "A voice-native interface layer designed for speed and precision"
 
 ## Vibe Coded Projects
 
