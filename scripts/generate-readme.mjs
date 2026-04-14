@@ -158,7 +158,7 @@ async function main() {
   const archiveProjects = pickRepos(projectSections.archiveProjects ?? []);
 
   const unassignedRepos = repos.filter((repo) => !assignedRepoKeys.has(repo.key));
-  activeProjects.push(...unassignedRepos);
+  archiveProjects.push(...unassignedRepos);
 
   const lines = [];
 

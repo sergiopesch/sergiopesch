@@ -11,18 +11,6 @@ Learning as I go
 - ✨ <a href="https://github.com/sergiopesch/voltz"><b>voltz</b></a> — "Voice-first AI companion for electronics enthusiasts"
 - ✨ <a href="https://github.com/sergiopesch/clitronic"><b>clitronic</b></a> — "A tool for electronic enthusiasts "
 - ✨ <a href="https://github.com/sergiopesch/voco"><b>voco</b></a> — "A voice-native interface layer designed for speed and precision"
-- 🎵 <a href="https://github.com/sergiopesch/mp3"><b>mp3</b></a> — Paste URL, get audio
-- 🏓 <a href="https://github.com/sergiopesch/ponglearn"><b>ponglearn</b></a> — Pong, but it teaches stuff
-- 🎙️ <a href="https://github.com/sergiopesch/virtualpodcaststudio"><b>virtualpodcaststudio</b></a> — Generates podcasts from the web
-- 📚 <a href="https://github.com/sergiopesch/ai-research-gather"><b>ai-research-gather</b></a> — Papers summarized
-- 🥋 <a href="https://github.com/sergiopesch/mybjjmentor"><b>mybjjmentor</b></a> — BJJ tracker
-- 🎬 <a href="https://github.com/sergiopesch/video-meme"><b>video-meme</b></a> — Videos → memes
-- 💡 <a href="https://github.com/sergiopesch/masterjj-initial-idea"><b>masterjj-initial-idea</b></a> — BJJ concept
-- 📊 <a href="https://github.com/sergiopesch/pod-visualizer"><b>pod-visualizer</b></a> — Podcast visuals
-- 🏋️ <a href="https://github.com/sergiopesch/kettlebellform"><b>kettlebellform</b></a> — Kettlebell form checker
-- 📆 <a href="https://github.com/sergiopesch/weekly"><b>weekly</b></a> — Weekly planner thing
-- 🌐 <a href="https://github.com/sergiopesch/my-site-template"><b>my-site-template</b></a> — Site template
-- 🌱 <a href="https://github.com/sergiopesch/plant-watering-system"><b>plant-watering-system</b></a> — Waters plants
 
 ## Vibe Coded Projects
 
@@ -48,7 +36,18 @@ Learning as I go
 
 <sub>Saved for later</sub>
 
-- _No repos assigned yet._
+- 🎵 <a href="https://github.com/sergiopesch/mp3"><b>mp3</b></a> — Paste URL, get audio
+- 🏓 <a href="https://github.com/sergiopesch/ponglearn"><b>ponglearn</b></a> — Pong, but it teaches stuff
+- 🎙️ <a href="https://github.com/sergiopesch/virtualpodcaststudio"><b>virtualpodcaststudio</b></a> — Generates podcasts from the web
+- 📚 <a href="https://github.com/sergiopesch/ai-research-gather"><b>ai-research-gather</b></a> — Papers summarized
+- 🥋 <a href="https://github.com/sergiopesch/mybjjmentor"><b>mybjjmentor</b></a> — BJJ tracker
+- 🎬 <a href="https://github.com/sergiopesch/video-meme"><b>video-meme</b></a> — Videos → memes
+- 💡 <a href="https://github.com/sergiopesch/masterjj-initial-idea"><b>masterjj-initial-idea</b></a> — BJJ concept
+- 📊 <a href="https://github.com/sergiopesch/pod-visualizer"><b>pod-visualizer</b></a> — Podcast visuals
+- 🏋️ <a href="https://github.com/sergiopesch/kettlebellform"><b>kettlebellform</b></a> — Kettlebell form checker
+- 📆 <a href="https://github.com/sergiopesch/weekly"><b>weekly</b></a> — Weekly planner thing
+- 🌐 <a href="https://github.com/sergiopesch/my-site-template"><b>my-site-template</b></a> — Site template
+- 🌱 <a href="https://github.com/sergiopesch/plant-watering-system"><b>plant-watering-system</b></a> — Waters plants
 
 <sub>31 repos</sub>
 
