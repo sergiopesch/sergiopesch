@@ -1,8 +1,6 @@
 # Hello there, I'm Sergio <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28" alt="hi" />
 📍 London, UK
 
-Learning as I go
-
 ## Active Projects
 
 <sub>Focus learning</sub>

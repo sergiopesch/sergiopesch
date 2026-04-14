@@ -167,8 +167,6 @@ async function main() {
   );
   lines.push(`📍 London, UK`);
   lines.push("");
-  lines.push(`Learning as I go`);
-  lines.push("");
 
   renderSection(lines, `Active Projects`, `Focus learning`, activeProjects);
   renderSection(lines, `Vibe Coded Projects`, `Just for fun`, vibeCodedProjects);
