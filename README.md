@@ -28,7 +28,7 @@
 - 🔳 <a href="https://github.com/sergiopesch/qr-code-generator"><b>qr-code-generator</b></a> — Links → scannable squares
 - 📝 <a href="https://github.com/sergiopesch/Note-Taker"><b>note-taker</b></a> — Talk, ramble, get notes
 
-## Archive Projects
+## Archived Projects
 
 <sub>Saved for later</sub>
 - ⚡ <a href="https://github.com/sergiopesch/voltz"><b>voltz</b></a> — "Voice-first AI companion for electronics enthusiasts"
