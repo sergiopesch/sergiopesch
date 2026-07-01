@@ -1,10 +1,11 @@
 # Hello there, I'm Sergio <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28" alt="hi" />
 📍 London
 
-Deep in vibe-coding mode
+Deep into building by taste.
 
 ## Current Projects
 
+- ⚽ <a href="https://github.com/sergiopesch/worldcup-2026-heroku"><b>worldcup-2026-heroku</b></a> — World Cup 2026 command centre: brackets, predictions, Salesforce showing off
 - 📝 <a href="https://github.com/sergiopesch/Note-Taker"><b>note-taker</b></a> — Talk, ramble, get tidy notes and next steps
 - ☕️ <a href="https://github.com/sergiopesch/Fuse--Creatine-"><b>fuse--creatine-</b></a> — Creatine for coffee: performance upgrade without gritty regret
 - 🤖 <a href="https://github.com/sergiopesch/robot-rave-"><b>robot-rave-</b></a> — A dancing robot built at a London hackathon
@@ -24,12 +25,11 @@ Deep in vibe-coding mode
 - 🗣️ <a href="https://github.com/sergiopesch/VoiceModeReplica"><b>voicemodereplica</b></a> — Recreating voice mode vibes: talking to code, again
 - 🧱 <a href="https://github.com/sergiopesch/verticalbrick-pong-game"><b>verticalbrick-pong-game</b></a> — Vertical pong bricks: frustration training disguised as fun
 - 🔊 <a href="https://github.com/sergiopesch/voice"><b>voice</b></a> — Voice stuff: talk in, magic out, occasionally haunted
-- 👥 <a href="https://github.com/sergiopesch/diarization-demo"><b>diarization-demo</b></a> — Speaker diarization demo: who said what, now
 
 <sub>20 repos</sub>
 
-## Vibe Activity
+## Taste Activity
 
-<sub>Parody heatmap. Not real contributions. Crab-coded.</sub>
+<sub>Taste heatmap. Claw influenced.</sub>
 
-<img src="assets/vibe-activity.svg" alt="Vibe Activity" />
+<img src="assets/vibe-activity.svg" alt="Taste Activity" />

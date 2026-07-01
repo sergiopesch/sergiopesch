@@ -2,6 +2,12 @@ import fs from "node:fs/promises";
 
 const GH_USER = "sergiopesch";
 const GH_GRAPHQL = "https://api.github.com/graphql";
+const PINNED_PROJECTS = [
+  {
+    name: "worldcup-2026-heroku",
+    url: "https://github.com/sergiopesch/worldcup-2026-heroku",
+  },
+];
 
 function mdEscape(s = "") {
   return String(s).replace(/\|/g, "\\|").trim();
@@ -76,13 +82,28 @@ async function main() {
   );
 
   const reposRaw = data?.user?.repositories?.nodes ?? [];
-  const repos = reposRaw
+  const pinnedNames = new Set(PINNED_PROJECTS.map((r) => r.name));
+  const pinnedRepos = PINNED_PROJECTS.map((r) => {
+    const custom = taglines?.[r.name] || "";
+    const desc = mdEscape(enforceTenWordsFunny(custom));
+    const emoji = emojis?.[r.name] || "✨";
+    return {
+      name: mdEscape(String(r.name).toLowerCase()),
+      url: r.url,
+      pushedAt: "",
+      desc,
+      emoji,
+    };
+  });
+
+  const repos = pinnedRepos.concat(reposRaw
     .filter(Boolean)
     .filter((r) => !r.isPrivate)
     .filter((r) => !r.isArchived)
     .filter((r) => !r.isFork)
     .filter((r) => r.name !== GH_USER) // hide the profile repo itself
-    .slice(0, 20)
+    .filter((r) => !pinnedNames.has(r.name))
+    .slice(0, 20 - pinnedRepos.length)
     .map((r) => {
       const custom = taglines?.[r.name] || "";
       const fallback = r.description ? `"${r.description}"` : "";
@@ -95,7 +116,7 @@ async function main() {
         desc,
         emoji,
       };
-    });
+    }));
 
   const lines = [];
 
@@ -104,7 +125,7 @@ async function main() {
   );
   lines.push(`📍 London`);
   lines.push("");
-  lines.push(`Deep in vibe-coding mode`);
+  lines.push(`Deep into building by taste.`);
   lines.push("");
 
   lines.push(`## Current Projects`);
@@ -119,8 +140,8 @@ async function main() {
   lines.push(`<sub>${repos.length} repos</sub>`);
   lines.push("");
 
-  // --- Vibe Activity (parody grid; not real GitHub contributions) ---
-  function vibeActivitySvg() {
+  // --- Taste Activity (parody grid; not real GitHub contributions) ---
+  function tasteActivitySvg() {
     // Grid size similar-ish to GitHub contributions.
     // This mask was derived from your logocrab.webp (downsampled) at higher resolution.
     const rows = 28;
@@ -199,17 +220,17 @@ async function main() {
       }
     }
 
-    return `<?xml version="1.0" encoding="UTF-8"?>\n<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vibe Activity (parody)">\n  <rect width="100%" height="100%" fill="transparent"/>\n  ${rects.join("\n  ")}\n</svg>\n`;
+    return `<?xml version="1.0" encoding="UTF-8"?>\n<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Taste Activity (parody)">\n  <rect width="100%" height="100%" fill="transparent"/>\n  ${rects.join("\n  ")}\n</svg>\n`;
   }
 
   await fs.mkdir("assets", { recursive: true });
-  await fs.writeFile("assets/vibe-activity.svg", vibeActivitySvg(), "utf8");
+  await fs.writeFile("assets/vibe-activity.svg", tasteActivitySvg(), "utf8");
 
-  lines.push(`## Vibe Activity`);
+  lines.push(`## Taste Activity`);
   lines.push("");
-  lines.push(`<sub>Parody heatmap. Not real contributions. Crab-coded.</sub>`);
+  lines.push(`<sub>Taste heatmap. Claw influenced.</sub>`);
   lines.push("");
-  lines.push(`<img src="assets/vibe-activity.svg" alt="Vibe Activity" />`);
+  lines.push(`<img src="assets/vibe-activity.svg" alt="Taste Activity" />`);
   lines.push("");
 
   await fs.writeFile("README.md", lines.join("\n"), "utf8");
