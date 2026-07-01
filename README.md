@@ -5,6 +5,7 @@
 
 <sub>Focus learning</sub>
 
+- ⚽ <a href="https://github.com/sergiopesch/worldcup-2026-heroku"><b>worldcup-2026-heroku</b></a> — World Cup 2026 command centre: brackets, predictions, Salesforce showing off
 - 🐾 <a href="https://github.com/sergiopesch/animal360"><b>animal360</b></a> — "A Salesforce application for animal welfare organisations"
 - 🗣️ <a href="https://github.com/sergiopesch/voco"><b>voco</b></a> — "A Linux voice-native interface layer designed for speed and precision"
 
@@ -46,7 +47,7 @@
 - 🌐 <a href="https://github.com/sergiopesch/my-site-template"><b>my-site-template</b></a> — Site template
 - 🌱 <a href="https://github.com/sergiopesch/plant-watering-system"><b>plant-watering-system</b></a> — Waters plants
 
-<sub>31 repos</sub>
+<sub>32 repos</sub>
 
 ## Vibe Activity
 
