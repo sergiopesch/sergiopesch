@@ -13,6 +13,7 @@
 
 <sub>Just for fun</sub>
 
+- 🐧 <a href="https://github.com/sergiopesch/codex-realtime-linux"><b>codex-realtime-linux</b></a> — Codex meets Linux latency: fast loops, fewer excuses
 - 🥧 <a href="https://github.com/sergiopesch/raspberry-pi-maker"><b>raspberry-pi-maker</b></a> — Pi projects, maker vibes
 - 🔌 <a href="https://github.com/sergiopesch/arduino-maker"><b>arduino-maker</b></a> — Arduino hacks and builds
 - ☕️ <a href="https://github.com/sergiopesch/Fuse--Creatine-"><b>fuse--creatine-</b></a> — Creatine meets coffee
@@ -47,7 +48,7 @@
 - 🌐 <a href="https://github.com/sergiopesch/my-site-template"><b>my-site-template</b></a> — Site template
 - 🌱 <a href="https://github.com/sergiopesch/plant-watering-system"><b>plant-watering-system</b></a> — Waters plants
 
-<sub>32 repos</sub>
+<sub>33 repos</sub>
 
 ## Vibe Activity
 
