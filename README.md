@@ -1,18 +1,19 @@
-# Hello there, I'm Sergio <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28" alt="hi" />
+# Hello there <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28" alt="hi" />
 📍 London, UK
 
 ## Active Projects
 
-<sub>Focus learning</sub>
+<sub>Focus </sub>
 
-- ⚽ <a href="https://github.com/sergiopesch/worldcup-2026-heroku"><b>worldcup-2026-heroku</b></a> — World Cup 2026 command centre: brackets, predictions, Salesforce showing off
+- 
 - 🐾 <a href="https://github.com/sergiopesch/animal360"><b>animal360</b></a> — "A Salesforce application for animal welfare organisations"
 - 🗣️ <a href="https://github.com/sergiopesch/voco"><b>voco</b></a> — "A Linux voice-native interface layer designed for speed and precision"
 
-## Fun Projects
+## Fun
 
-<sub>Just for fun</sub>
+<sub>Why not? </sub>
 
+- ⚽ <a href="https://github.com/sergiopesch/worldcup-2026-heroku"><b>worldcup-2026-heroku</b></a> — World Cup 2026 command centre: brackets, predictions, Salesforce showing off
 - 🐧 <a href="https://github.com/sergiopesch/codex-realtime-linux"><b>codex-realtime-linux</b></a> — Codex meets Linux latency: fast loops, fewer excuses
 - 🥧 <a href="https://github.com/sergiopesch/raspberry-pi-maker"><b>raspberry-pi-maker</b></a> — Pi projects, maker vibes
 - 🔌 <a href="https://github.com/sergiopesch/arduino-maker"><b>arduino-maker</b></a> — Arduino hacks and builds
