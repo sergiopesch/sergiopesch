@@ -5,7 +5,6 @@
 
 <sub>Focus </sub>
 
-- 
 - 🐾 <a href="https://github.com/sergiopesch/animal360"><b>animal360</b></a> — "A Salesforce application for animal welfare organisations"
 - 🗣️ <a href="https://github.com/sergiopesch/voco"><b>voco</b></a> — "A Linux voice-native interface layer designed for speed and precision"
 
