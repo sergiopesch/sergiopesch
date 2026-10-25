@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 
 const GH_USER = "sergiopesch";
 const GH_GRAPHQL = "https://api.github.com/graphql";
+const REPOSITORY_ROOT = new URL("../", import.meta.url);
 
 function mdEscape(s = "") {
   return String(s).replace(/\|/g, "\\|").trim();
@@ -48,10 +49,10 @@ async function ghGraphql(query, variables = {}) {
 }
 
 async function main() {
-  const taglines = JSON.parse(await fs.readFile("scripts/taglines.json", "utf8"));
-  const emojis = JSON.parse(await fs.readFile("scripts/emojis.json", "utf8"));
+  const taglines = JSON.parse(await fs.readFile(new URL("scripts/taglines.json", REPOSITORY_ROOT), "utf8"));
+  const emojis = JSON.parse(await fs.readFile(new URL("scripts/emojis.json", REPOSITORY_ROOT), "utf8"));
   const projectSections = JSON.parse(
-    await fs.readFile("scripts/project-sections.json", "utf8")
+    await fs.readFile(new URL("scripts/project-sections.json", REPOSITORY_ROOT), "utf8")
   );
 
   // Paginate through ALL public repos, sorted by creation date (newest first)
@@ -258,8 +259,8 @@ async function main() {
     return `<?xml version="1.0" encoding="UTF-8"?>\n<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vibe Activity (parody)">\n  <rect width="100%" height="100%" fill="transparent"/>\n  ${rects.join("\n  ")}\n</svg>\n`;
   }
 
-  await fs.mkdir("assets", { recursive: true });
-  await fs.writeFile("assets/vibe-activity.svg", vibeActivitySvg(), "utf8");
+  await fs.mkdir(new URL("assets/", REPOSITORY_ROOT), { recursive: true });
+  await fs.writeFile(new URL("assets/vibe-activity.svg", REPOSITORY_ROOT), vibeActivitySvg(), "utf8");
 
   lines.push(`## Vibe Activity`);
   lines.push("");
@@ -268,7 +269,7 @@ async function main() {
   lines.push(`<img src="assets/vibe-activity.svg" alt="Vibe Activity" />`);
   lines.push("");
 
-  await fs.writeFile("README.md", lines.join("\n"), "utf8");
+  await fs.writeFile(new URL("README.md", REPOSITORY_ROOT), lines.join("\n"), "utf8");
   console.log("README.md generated");
 }
 

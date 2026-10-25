@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "generate": "node scripts/generate-readme.mjs"
+    "generate": "node generate-readme.mjs"
   }
 }
